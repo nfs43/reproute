@@ -282,9 +282,15 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: smallboldtext.copyWith(color: Colors.black),
                           ),
                         ),
-                        Text(
-                          'Forgot Password?',
-                          style: smallblueBoldtext.copyWith(),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pushNamed(
+                                context, RoutesName.forgotPasswordScreen);
+                          },
+                          child: Text(
+                            'Forgot Password?',
+                            style: smallblueBoldtext.copyWith(),
+                          ),
                         ),
                       ],
                     ),

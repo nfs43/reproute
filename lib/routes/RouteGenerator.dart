@@ -1,12 +1,11 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:rep_route/routes/GeneratePageRoute.dart';
 import 'package:rep_route/routes/Routes.dart';
+import 'package:rep_route/screens/forgotpassword.dart';
 import 'package:rep_route/screens/login.dart';
 import 'package:rep_route/screens/signup.dart';
 import 'package:rep_route/screens/splash.dart';
-
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -20,6 +19,9 @@ class RouteGenerator {
       case RoutesName.signUpScreen:
         return GeneratePageRoute(
             widget: SignUpScreen(), routeName: settings.name);
+      case RoutesName.forgotPasswordScreen:
+        return GeneratePageRoute(
+            widget: ForgotPasswordScreen(), routeName: settings.name);
       // case RoutesName.appointmentPage:
       //   return GeneratePageRoute(
       //       widget: WishListScreen(), routeName: settings.name);

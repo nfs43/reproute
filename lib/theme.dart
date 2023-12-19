@@ -34,6 +34,10 @@ TextStyle mainHeading = const TextStyle(
 TextStyle normalText = const TextStyle(
   fontSize: 18,
 );
+
+TextStyle smallText = const TextStyle(
+  fontSize: 14,
+);
 TextStyle smallboldtext = const TextStyle(
   fontWeight: FontWeight.w600,
   fontSize: 16,
