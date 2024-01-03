@@ -4,6 +4,8 @@ import 'package:rep_route/routes/GeneratePageRoute.dart';
 import 'package:rep_route/routes/Routes.dart';
 import 'package:rep_route/screens/forgotpassword.dart';
 import 'package:rep_route/screens/login.dart';
+import 'package:rep_route/screens/resetpassword.dart';
+import 'package:rep_route/screens/root/root.dart';
 import 'package:rep_route/screens/signup.dart';
 import 'package:rep_route/screens/splash.dart';
 
@@ -22,6 +24,12 @@ class RouteGenerator {
       case RoutesName.forgotPasswordScreen:
         return GeneratePageRoute(
             widget: ForgotPasswordScreen(), routeName: settings.name);
+      case RoutesName.resetPasswordScreen:
+        return GeneratePageRoute(
+            widget: ResetPasswordScreen(), routeName: settings.name);
+      case RoutesName.rootScreen:
+        return GeneratePageRoute(
+            widget: RootScreen(), routeName: settings.name);
       // case RoutesName.appointmentPage:
       //   return GeneratePageRoute(
       //       widget: WishListScreen(), routeName: settings.name);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rep_route/theme.dart';
 
 class CustomPrimaryButton extends StatelessWidget {
   final Color buttonColor;
@@ -32,11 +33,7 @@ class CustomPrimaryButton extends StatelessWidget {
             child: Center(
               child: Text(
                 textValue,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: textColor,
-                ),
+                style: primarybutton.copyWith(color: textColor),
               ),
             ),
           ),

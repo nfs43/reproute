@@ -1,52 +1,38 @@
-// // ignore_for_file: camel_case_types
+// ignore_for_file: camel_case_types
+import 'package:flutter/material.dart';
+import 'package:rep_route/screens/dashboard.dart';
+import 'package:rep_route/screens/root/widgets/BottomBarTab.dart';
 
-// import 'dart:ffi';
+class BottomBarProvider extends ChangeNotifier {
+  int _currentTab = 0;
+  Widget _screen = Dashboard();
+  bool _hide = false;
 
-// import 'package:Bookngly/screens/AppointmentScreen.dart';
-// import 'package:Bookngly/screens/HomeScreen.dart';
-// import 'package:Bookngly/screens/InboxScreen.dart';
-// import 'package:Bookngly/screens/ProfileScreen.dart';
-// import 'package:Bookngly/screens/RootScreen.dart';
-// import 'package:Bookngly/screens/DetailScreen.dart';
-// import 'package:Bookngly/screens/WishListScreen.dart';
-// import 'package:Bookngly/widgets/BottomBarWidgets/BottomBarTab.dart';
-// import 'package:flutter/material.dart';
+  final List<Widget> screens = [
+    Dashboard(),
+    Dashboard(),
+    Dashboard(),
+  ];
 
-// class BottomBarProvider extends ChangeNotifier {
-//   int _currentTab = 0;
-//   Widget _screen = HomeScreen();
-//   bool _hide = false;
+  final List<MyTabItem> _bottombaritems = [
+    MyTabItem('Search', 'assets/icons/map_search.svg'),
+    MyTabItem('Chat', 'assets/icons/chat.svg'),
+    MyTabItem('Calendar', 'assets/icons/calendar.svg'),
+  ];
 
+  get getbottombaritems => _bottombaritems;
 
-//   final List<Widget> screens = [
-//     HomeScreen(),
-//     WishListScreen(),
-//     AppointmentScreen(),
-//     InboxScreen(),
-//     ProfileScreen()
-//   ];
+  set screen(screen) {
+    _screen = screen;
+    notifyListeners();
+  }
 
-//   final List<MyTabItem> _bottombaritems = [
-//     MyTabItem('Explore', Icons.search),
-//     MyTabItem('Wishlist', Icons.favorite_border),
-//     MyTabItem('Appointment', Icons.calendar_month),
-//     MyTabItem('Inbox', Icons.message),
-//     MyTabItem('Profile', Icons.person),
-//   ];
+  get screen => _screen;
 
-//   get getbottombaritems => _bottombaritems;
+  void hideBottomBar(bool hide) {
+    _hide = hide;
+    notifyListeners();
+  }
 
-//   set screen(screen) {
-//     _screen = screen;
-//     notifyListeners();
-//   }
-
-//   get screen => _screen;
-
-//   void hideBottomBar(bool hide) {
-//     _hide = hide;
-//     notifyListeners();
-//   }
-
-//   get hide => _hide;
-// }
+  get hide => _hide;
+}
