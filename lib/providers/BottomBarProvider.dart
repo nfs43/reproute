@@ -1,7 +1,7 @@
 // ignore_for_file: camel_case_types
 import 'package:flutter/material.dart';
 import 'package:rep_route/screens/dashboard.dart';
-import 'package:rep_route/screens/root/widgets/BottomBarTab.dart';
+import 'package:rep_route/screens/root/widgets/Bnb/BottomBarTab.dart';
 
 class BottomBarProvider extends ChangeNotifier {
   int _currentTab = 0;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:overlay_support/overlay_support.dart';
-import 'package:rep_route/screens/root/widgets/BottomBar.dart';
+import 'package:rep_route/screens/root/widgets/Bnb/BottomBar.dart';
 import 'package:rep_route/theme.dart';
 
 class RootScreen extends StatelessWidget {
@@ -22,30 +22,22 @@ class RootScreen extends StatelessWidget {
               elevation: 0,
               leadingWidth: 80,
               leading: Container(
-                child: Padding(
-                  padding: EdgeInsets.only(left: 5),
-                  child: IconButton(
-                    icon: Transform.scale(
-                      scale: 1,
-                      child: Image.asset('assets/logo/reproute_logo.png'),
-                    ), // Icon on the left
-                    onPressed: () {},
-                  ),
+                margin:
+                    EdgeInsets.only(left: 10, top: 10, right: 10, bottom: 10),
+                child: ClipOval(
+                  child: Image.asset('assets/images/hemsworth.jpeg',
+                      fit: BoxFit.cover),
                 ),
               ),
               actions: [
-                Container(
-                  width: 80,
-                  height: 80,
-                  child: Padding(
-                    padding: EdgeInsets.all(13),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/images/hemsworth.jpeg',
-                        height: 80,
-                      ),
-                    ),
+                IconButton(
+                  color: Colors.amber,
+                  padding: EdgeInsets.only( top:10,bottom: 10),
+                  icon: Image.asset(
+                    'assets/logo/reproute_logo.png',
                   ),
+                  iconSize: 80,
+                  onPressed: () {},
                 ),
               ],
             ),

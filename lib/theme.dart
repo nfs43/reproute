@@ -26,6 +26,8 @@ Color buttonbg = Color(0xff1A79C4);
 Color bottombaricon_selected = Color(0xff1A79C4);
 Color bottombaricon_unselected = Color.fromARGB(255, 168, 168, 168);
 Color dashboardbg = Color(0xfff6f8fa);
+Color chipinputfieldbg = Color(0xfff1f5f9);
+Color chipbg = Color(0xffD6DFEA);
 
 //for mobile
 TextStyle labelInput = const TextStyle(
