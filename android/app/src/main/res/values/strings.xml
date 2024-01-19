@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Reproute</string>
+    <string name="facebook_app_id">3618943748423169</string>
+    <string name="fb_login_protocol_scheme">fb3618943748423169</string>
+    <string name="facebook_client_token">3ad43e42229d6b0ed9c9847b35774224</string>
+
+
+</resources>

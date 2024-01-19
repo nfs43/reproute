@@ -1,8 +1,11 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, prefer_final_fields, unused_field, prefer_typing_uninitialized_variables
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:rep_route/routes/Routes.dart';
 import 'package:rep_route/screens/root/widgets/DoctorPointerSheet.dart';
 import 'package:rep_route/screens/root/widgets/FIlterSheet.dart';
@@ -19,6 +22,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
   int _current = 0;
   final CarouselController _controller = CarouselController();
   var imglist = [
@@ -37,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isloading = false;
   bool _isChecked = false;
   bool passwordVisible = false;
+  
 
   void togglePassword() {
     setState(() {
@@ -364,9 +371,30 @@ class _LoginScreenState extends State<LoginScreen> {
                   buttonColor: buttonbg,
                   textValue: 'Login',
                   textColor: Colors.white,
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(
-                        context, RoutesName.rootScreen);
+                  onPressed: () async {
+
+    //Facenook Signin
+    signInWithFacebook();
+    //Google SignIn
+    //                   final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+
+    // if (googleUser != null) {
+    //   final GoogleSignInAuthentication googleAuth =
+    //       await googleUser.authentication;
+
+    //   final OAuthCredential credential = GoogleAuthProvider.credential(
+    //     accessToken: googleAuth.accessToken,
+    //     idToken: googleAuth.idToken,
+    //   );
+
+    //   final UserCredential userCredential =
+    //       await FirebaseAuth.instance.signInWithCredential(credential);
+
+    //   final User? user = userCredential.user;
+    //   print('UserEmail:'+user!.email.toString());
+    // }
+                    // Navigator.pushReplacementNamed(
+                    //     context, RoutesName.rootScreen);
                   },
                 ),
               ),
@@ -374,4 +402,23 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ));
   }
+
+  Future<Future<UserCredential>> signInWithFacebook() async {
+  // Trigger the sign-in flow
+  final LoginResult loginResult = await FacebookAuth.instance.login(
+    permissions: ['email','public_profile','user_birthday']
+  );
+
+  // Create a credential from the access token
+  final OAuthCredential facebookAuthCredential = FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+
+  var userData = await FacebookAuth.instance.getUserData();
+  var email = userData['email'];
+
+  print('UserEmail:$email');
+
+  // Once signed in, return the UserCredential
+  return FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
+}
 }

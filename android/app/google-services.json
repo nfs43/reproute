@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "70568400516",
+    "project_id": "reproute-831b5",
+    "storage_bucket": "reproute-831b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:70568400516:android:805f553156ca3da60894d1",
+        "android_client_info": {
+          "package_name": "com.reproute.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC19INPDI_82NIdUtwvXpl7DzKWj4axFAY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
