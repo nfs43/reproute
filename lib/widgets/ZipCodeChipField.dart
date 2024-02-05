@@ -1,25 +1,28 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:rep_route/providers/dashboardProvider.dart';
 
-class EditableChipField extends StatefulWidget {
-  const EditableChipField({
+class ZipCodeChipField extends StatefulWidget {
+  const ZipCodeChipField({
     Key? key,
+    required this.dashboardProvider,
     required this.initialValues,
     required this.hintText,
     required this.toppingsList, // Add this line
   }) : super(key: key);
 
+  final DashboardProvider dashboardProvider;
   final List<String> initialValues;
   final String hintText;
   final List<String> toppingsList; // Add this line
 
   @override
-  EditableChipFieldExampleState createState() =>
-      EditableChipFieldExampleState();
+  ZipCodeChipFieldState createState() =>
+      ZipCodeChipFieldState();
 }
 
-class EditableChipFieldExampleState extends State<EditableChipField> {
+class ZipCodeChipFieldState extends State<ZipCodeChipField> {
   final FocusNode _chipFocusNode = FocusNode();
   List<String> _toppings = <String>[];
   List<String> _suggestions = <String>[];
@@ -83,10 +86,13 @@ class EditableChipFieldExampleState extends State<EditableChipField> {
   }
 
   void _selectSuggestion(String topping) {
+    if(_toppings.isEmpty)
     setState(() {
       _toppings.add(topping);
       _suggestions = <String>[];
     });
+    widget.dashboardProvider.selectedzipCodes =_toppings;
+
   }
 
   void _onChipTapped(String topping) {}
@@ -100,9 +106,9 @@ class EditableChipFieldExampleState extends State<EditableChipField> {
 
   void _onSubmitted(String text) {
     if (text.trim().isNotEmpty) {
-      setState(() {
-        _toppings = <String>[..._toppings, text.trim()];
-      });
+      // setState(() {
+      //   _toppings = <String>[..._toppings, text.trim()];
+      // });
     } else {
       _chipFocusNode.unfocus();
     }

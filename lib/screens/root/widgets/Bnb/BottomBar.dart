@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 import 'package:provider/provider.dart';
 import 'package:rep_route/routes/RouteGenerator.dart';
-import 'package:rep_route/providers/BottomBarProvider.dart';
+import 'package:rep_route/providers/bottomBarProvider.dart';
 import 'package:rep_route/screens/root/widgets/Bnb/BottomBarTab.dart';
 import 'package:rep_route/theme.dart';
 

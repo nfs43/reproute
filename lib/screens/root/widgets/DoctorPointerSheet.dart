@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:rep_route/theme.dart';
-import 'package:rep_route/widgets/EditableChipField.dart';
+import 'package:rep_route/widgets/SpecialityChipField.dart';
 import 'package:rep_route/widgets/PrimaryButton.dart';
 
 class DoctorPointerSheet extends StatelessWidget {

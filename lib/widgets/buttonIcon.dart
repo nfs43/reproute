@@ -14,7 +14,7 @@ class ButtonIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton.icon(
-  onPressed: () {},
+  onPressed: onPressed,
   icon: Image.asset(
     imagePath,
   ),

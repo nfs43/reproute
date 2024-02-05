@@ -1,13 +1,20 @@
 // ignore_for_file: prefer_const_literals_to_create_immutables, prefer_const_constructors, prefer_final_fields, unused_field, prefer_typing_uninitialized_variables
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+import 'package:rep_route/network/request/SignupRequest.dart';
+import 'package:rep_route/providers/signUpProvider.dart';
 import 'package:rep_route/routes/Routes.dart';
 import 'package:rep_route/theme.dart';
 import 'package:rep_route/utils/utils.dart';
 import 'package:rep_route/widgets/InputFIeld.dart';
 import 'package:rep_route/widgets/PrimaryButton.dart';
+import 'package:rep_route/widgets/ProgressIndicator/LoadingWidget.dart';
 import 'package:rep_route/widgets/buttonIcon.dart';
 import 'package:rep_route/widgets/horizontalineOr.dart';
 
@@ -17,6 +24,10 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final GlobalKey<FormState> _signupformKey = GlobalKey<FormState>();
+
+  final GoogleSignIn googleSignIn = GoogleSignIn();
+
   int _current = 0;
   final CarouselController _controller = CarouselController();
   var imglist = [
@@ -32,9 +43,46 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController emailController = TextEditingController(text: '');
   final TextEditingController passwordController =
       TextEditingController(text: '');
-  bool _isloading = false;
   bool _isChecked = false;
   bool passwordVisible = false;
+  late SignUpProvider signUpProvider;
+
+  Future<void> signUp(SignUpRequest signUpRequest) async {
+    try {
+      await signUpProvider.signUpUser(context, signUpRequest);
+      // Handle success or perform any other logic after sign up
+    } catch (error) {
+      print(error.toString());
+      // Handle errors and show error messages
+    }
+  }
+
+  Future<void> signInWithFacebook() async {
+    // Trigger the sign-in flow
+    final LoginResult loginResult = await FacebookAuth.instance
+        .login(permissions: ['email', 'public_profile', 'user_birthday']);
+
+    // Create a credential from the access token
+    final OAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(loginResult.accessToken!.token);
+
+    UserCredential userCredential = await FirebaseAuth.instance
+        .signInWithCredential(facebookAuthCredential);
+
+    // Access user information
+    User? user = userCredential.user;
+    //print('User email: ${user?.email}');
+    //print('Token: ${loginResult.accessToken!.token}');
+
+    signUp(SignUpRequest(
+        email: user?.email,
+        issocial: true,
+        googleToken: null,
+        fullName: user?.displayName,
+        password: null,
+        facebookToken: null,
+        socialToken: user!.uid));
+  }
 
   void togglePassword() {
     setState(() {
@@ -49,14 +97,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
     bool isTabletlhorizontal =
         isTablet >= 600 && orientation == Orientation.landscape;
 
+    signUpProvider = Provider.of<SignUpProvider>(context, listen: false);
+
     return Scaffold(
       backgroundColor: primaryGrey,
-      body: SafeArea(
-          child: SingleChildScrollView(
-        child: isTabletlhorizontal
-            ? _buildHorizontalLayout()
-            : _buildVerticalLayout(),
-      )),
+      body: SafeArea(child:
+          Consumer<SignUpProvider>(builder: (context, signUpProvider, _) {
+        return Stack(children: [
+          SingleChildScrollView(
+            child: isTabletlhorizontal
+                ? _buildHorizontalLayout()
+                : _buildVerticalLayout(),
+          ),
+          if (signUpProvider.isLoading) Center(child: LoadingWidget()),
+        ]);
+      })),
     );
   }
 
@@ -246,14 +301,49 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ButtonIcon(
               imagePath: 'assets/icons/google.png',
               btntext: 'Sign Up with Google',
-              onPressed: () {},
+              onPressed: () async {
+                //Google SignIn
+                final GoogleSignInAccount? googleUser =
+                    await googleSignIn.signIn();
+
+                if (googleUser != null) {
+                  final GoogleSignInAuthentication googleAuth =
+                      await googleUser.authentication;
+
+                  final OAuthCredential credential =
+                      GoogleAuthProvider.credential(
+                    accessToken: googleAuth.accessToken,
+                    idToken: googleAuth.idToken,
+                  );
+
+                  // Force the account chooser by passing 'select_account' as prompt
+                  final UserCredential userCredential = await FirebaseAuth
+                      .instance
+                      .signInWithCredential(credential);
+
+                  final User? user = userCredential.user;
+                  print('UserEmail:' + user!.email.toString());
+                  print('GmailToken:' + googleAuth.accessToken.toString());
+
+                  signUp(SignUpRequest(
+                      email: user.email,
+                      issocial: true,
+                      googleToken: null,
+                      fullName: user.displayName,
+                      password: null,
+                      facebookToken: null,
+                      socialToken: user.uid));
+                }
+              },
             ),
             Container(
               padding: EdgeInsets.only(top: 15, bottom: 15),
               child: ButtonIcon(
                 imagePath: 'assets/icons/facebook.png',
                 btntext: 'Sign Up with Facebook',
-                onPressed: () {},
+                onPressed: () {
+                  signInWithFacebook();
+                },
               ),
             ),
             Container(
@@ -265,6 +355,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
             ),
             Form(
+              key: _signupformKey,
               child: Column(
                 children: [
                   Container(
@@ -395,7 +486,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 buttonColor: buttonbg,
                 textValue: 'Create an account',
                 textColor: Colors.white,
-                onPressed: () {},
+                onPressed: () {
+                  if (_isChecked) {
+                    if (_signupformKey.currentState!.validate()) {
+                      signUp(SignUpRequest(
+                          email: emailController.text,
+                          issocial: false,
+                          googleToken: null,
+                          fullName: nameController.text,
+                          password: passwordController.text,
+                          facebookToken: null,
+                          socialToken: null));
+                    }
+                  } else {
+                    showToast('Please agree to both the Terms of Service and Privacy Policy to continue.');
+                  }
+                },
               ),
             ),
           ],

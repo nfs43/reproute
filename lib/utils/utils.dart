@@ -4,6 +4,7 @@
 import 'dart:collection';
 //import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 //import 'package:table_calendar/table_calendar.dart';
 
 
@@ -105,14 +106,14 @@ final kLastDay = DateTime(kToday.year, kToday.month + 3, kToday.day);
     }
 
 
-//       void showToast(String message) {
-//  Fluttertoast.showToast(
-//         msg: message,
-//         toastLength: Toast.LENGTH_SHORT,
-//         gravity: ToastGravity.CENTER,
-//         timeInSecForIosWeb: 1,
-//         backgroundColor: Colors.red,
-//         textColor: Colors.white,
-//         fontSize: 16.0
-//     );
-// }
+      void showToast(String message) {
+ Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0
+    );
+}

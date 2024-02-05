@@ -1,73 +1,57 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:rep_route/providers/dashboardProvider.dart';
 
-const List<String> _pizzaToppings = <String>[
-  'Olives',
-  'Tomato',
-  'Cheese',
-  'Pepperoni',
-  'Bacon',
-  'Onion',
-  'Jalapeno',
-  'Mushrooms',
-  'Pineapple',
-];
+class SpecialityChipField extends StatefulWidget {
+  const SpecialityChipField({
+    Key? key,
+    required this.dashboardProvider,
+    required this.initialValues,
+    required this.hintText,
+    required this.toppingsList, // Add this line
+  }) : super(key: key);
 
-void main() => runApp(const EditableChipFieldApp());
-
-class EditableChipFieldApp extends StatelessWidget {
-  const EditableChipFieldApp({super.key});
+  final DashboardProvider dashboardProvider;
+  final List<String> initialValues;
+  final String hintText;
+  final List<String> toppingsList; // Add this line
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      home: const EditableChipFieldExample(),
-    );
-  }
+  SpecialityChipFieldState createState() =>
+      SpecialityChipFieldState();
 }
 
-class EditableChipFieldExample extends StatefulWidget {
-  const EditableChipFieldExample({super.key});
-
-  @override
-  EditableChipFieldExampleState createState() {
-    return EditableChipFieldExampleState();
-  }
-}
-
-class EditableChipFieldExampleState extends State<EditableChipFieldExample> {
+class SpecialityChipFieldState extends State<SpecialityChipField> {
   final FocusNode _chipFocusNode = FocusNode();
-  List<String> _toppings = <String>[_pizzaToppings.first];
+  List<String> _toppings = <String>[];
   List<String> _suggestions = <String>[];
 
   @override
+  void initState() {
+    super.initState();
+    //_toppings = widget.initialValues;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editable Chip Field Sample'),
-      ),
-      body: Column(
+    return SizedBox(
+      height:
+          _suggestions.isNotEmpty ? MediaQuery.of(context).size.height : null,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ChipsInput<String>(
-              values: _toppings,
-              decoration: const InputDecoration(
-                fillColor: Colors.black,
-                prefixIcon: Icon(Icons.local_pizza_rounded,color: Colors.amber,),
-                hintText: 'Search for toppings',
-              ),
-              strutStyle: const StrutStyle(fontSize: 15),
-              onChanged: _onChanged,
-              onSubmitted: _onSubmitted,
-              chipBuilder: _chipBuilder,
-              onTextChanged: _onSearchChanged,
-            ),
+          ChipsInput<String>(
+            values: _toppings,
+            hintText: widget.hintText,
+            strutStyle: const StrutStyle(fontSize: 15),
+            onChanged: _onChanged,
+            onSubmitted: _onSubmitted,
+            chipBuilder: _chipBuilder,
+            onTextChanged: _onSearchChanged,
           ),
           if (_suggestions.isNotEmpty)
-            Expanded(
+            Flexible(
               child: ListView.builder(
                 itemCount: _suggestions.length,
                 itemBuilder: (BuildContext context, int index) {
@@ -84,7 +68,8 @@ class EditableChipFieldExampleState extends State<EditableChipFieldExample> {
   }
 
   Future<void> _onSearchChanged(String value) async {
-    final List<String> results = await _suggestionCallback(value);
+    final List<String> results =
+        await _suggestionCallback(value, widget.toppingsList);
     setState(() {
       _suggestions = results
           .where((String topping) => !_toppings.contains(topping))
@@ -105,6 +90,7 @@ class EditableChipFieldExampleState extends State<EditableChipFieldExample> {
       _toppings.add(topping);
       _suggestions = <String>[];
     });
+widget.dashboardProvider.selectedspecialities = _toppings;
   }
 
   void _onChipTapped(String topping) {}
@@ -118,14 +104,11 @@ class EditableChipFieldExampleState extends State<EditableChipFieldExample> {
 
   void _onSubmitted(String text) {
     if (text.trim().isNotEmpty) {
-      setState(() {
-        _toppings = <String>[..._toppings, text.trim()];
-      });
+      // setState(() {
+      //   _toppings = <String>[..._toppings, text.trim()];
+      // });
     } else {
       _chipFocusNode.unfocus();
-      // setState(() {
-      //   _toppings = <String>[];
-      // });
     }
   }
 
@@ -135,20 +118,28 @@ class EditableChipFieldExampleState extends State<EditableChipFieldExample> {
     });
   }
 
-  FutureOr<List<String>> _suggestionCallback(String text) {
+  FutureOr<List<String>> _suggestionCallback(
+      String text, List<String> toppingsList) {
     if (text.isNotEmpty) {
-      return _pizzaToppings.where((String topping) {
+      return toppingsList.where((String topping) {
         return topping.toLowerCase().contains(text.toLowerCase());
       }).toList();
     }
     return const <String>[];
   }
+
+  @override
+  void dispose() {
+    _chipFocusNode.dispose();
+    super.dispose();
+  }
 }
 
 class ChipsInput<T> extends StatefulWidget {
   const ChipsInput({
-    super.key,
+    Key? key,
     required this.values,
+    required this.hintText,
     this.decoration = const InputDecoration(),
     this.style,
     this.strutStyle,
@@ -157,13 +148,13 @@ class ChipsInput<T> extends StatefulWidget {
     this.onChipTapped,
     this.onSubmitted,
     this.onTextChanged,
-  });
+  }) : super(key: key);
 
   final List<T> values;
+  final String hintText;
   final InputDecoration decoration;
   final TextStyle? style;
   final StrutStyle? strutStyle;
-
   final ValueChanged<List<T>> onChanged;
   final ValueChanged<T>? onChipTapped;
   final ValueChanged<String>? onSubmitted;
@@ -176,16 +167,11 @@ class ChipsInput<T> extends StatefulWidget {
 }
 
 class ChipsInputState<T> extends State<ChipsInput<T>> {
-  @visibleForTesting
   late final ChipsInputEditingController<T> controller;
-
-  String _previousText = '';
-  TextSelection? _previousSelection;
 
   @override
   void initState() {
     super.initState();
-
     controller = ChipsInputEditingController<T>(
       <T>[...widget.values],
       widget.chipBuilder,
@@ -197,42 +183,34 @@ class ChipsInputState<T> extends State<ChipsInput<T>> {
   void dispose() {
     controller.removeListener(_textListener);
     controller.dispose();
-
     super.dispose();
   }
 
   void _textListener() {
     final String currentText = controller.text;
 
-    if (_previousSelection != null) {
-      final int currentNumber = countReplacements(currentText);
-      final int previousNumber = countReplacements(_previousText);
+    final int currentNumber = countReplacements(currentText);
+    final int previousNumber = countReplacements(controller.previousText);
 
-      final int cursorEnd = _previousSelection!.extentOffset;
-      final int cursorStart = _previousSelection!.baseOffset;
+    final int cursorEnd = controller.selection.extentOffset;
+    final int cursorStart = controller.selection.baseOffset;
 
-      final List<T> values = <T>[...widget.values];
+    final List<T> values = <T>[...widget.values];
 
-      // If the current number and the previous number of replacements are different, then
-      // the user has deleted the InputChip using the keyboard. In this case, we trigger
-      // the onChanged callback. We need to be sure also that the current number of
-      // replacements is different from the input chip to avoid double-deletion.
-      if (currentNumber < previousNumber && currentNumber != values.length) {
-        if (cursorStart == cursorEnd) {
-          values.removeRange(cursorStart - 1, cursorEnd);
+    if (currentNumber < previousNumber && currentNumber != values.length) {
+      if (cursorStart == cursorEnd) {
+        values.removeRange(cursorStart - 1, cursorEnd);
+      } else {
+        if (cursorStart > cursorEnd) {
+          values.removeRange(cursorEnd, cursorStart);
         } else {
-          if (cursorStart > cursorEnd) {
-            values.removeRange(cursorEnd, cursorStart);
-          } else {
-            values.removeRange(cursorStart, cursorEnd);
-          }
+          values.removeRange(cursorStart, cursorEnd);
         }
-        widget.onChanged(values);
       }
+      widget.onChanged(values);
     }
 
-    _previousText = currentText;
-    _previousSelection = controller.selection;
+    controller.previousText = currentText;
   }
 
   static int countReplacements(String text) {
@@ -257,6 +235,44 @@ class ChipsInputState<T> extends State<ChipsInput<T>> {
           widget.onTextChanged?.call(controller.textWithoutReplacements),
       onSubmitted: (String value) =>
           widget.onSubmitted?.call(controller.textWithoutReplacements),
+      decoration: widget.decoration.copyWith(
+        filled: true,
+        fillColor: Colors.grey.shade200,
+        hintText: widget.hintText,
+        hintStyle: TextStyle(
+          color: Colors.grey.shade400,
+          fontWeight: FontWeight.w300,
+        ),
+        isDense: true,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          borderSide: BorderSide(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20.0),
+          borderSide: BorderSide(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20.0),
+          borderSide: BorderSide(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20.0),
+          borderSide: BorderSide(
+            color: Colors.grey.shade300,
+            width: 1,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -267,16 +283,13 @@ class ChipsInputEditingController<T> extends TextEditingController {
           text: String.fromCharCode(kObjectReplacementChar) * values.length,
         );
 
-  // This constant character acts as a placeholder in the TextField text value.
-  // There will be one character for each of the InputChip displayed.
   static const int kObjectReplacementChar = 0xFFFE;
 
   List<T> values;
+  String previousText = '';
 
   final Widget Function(BuildContext context, T data) chipBuilder;
 
-  /// Called whenever chip is either added or removed
-  /// from the outside the context of the text field.
   void updateValues(List<T> values) {
     if (values.length != this.values.length) {
       final String char = String.fromCharCode(kObjectReplacementChar);
@@ -297,10 +310,11 @@ class ChipsInputEditingController<T> extends TextEditingController {
   String get textWithReplacements => text;
 
   @override
-  TextSpan buildTextSpan(
-      {required BuildContext context,
-      TextStyle? style,
-      required bool withComposing}) {
+  TextSpan buildTextSpan({
+    required BuildContext context,
+    TextStyle? style,
+    required bool withComposing,
+  }) {
     final Iterable<WidgetSpan> chipWidgets =
         values.map((T v) => WidgetSpan(child: chipBuilder(context, v)));
 
@@ -316,7 +330,8 @@ class ChipsInputEditingController<T> extends TextEditingController {
 }
 
 class ToppingSuggestion extends StatelessWidget {
-  const ToppingSuggestion(this.topping, {super.key, this.onTap});
+  const ToppingSuggestion(this.topping, {Key? key, this.onTap})
+      : super(key: key);
 
   final String topping;
   final ValueChanged<String>? onTap;
@@ -325,11 +340,6 @@ class ToppingSuggestion extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       key: ObjectKey(topping),
-      // leading: CircleAvatar(
-      //   child: Text(
-      //     topping[0].toUpperCase(),
-      //   ),
-      // ),
       title: Text(topping),
       onTap: () => onTap?.call(topping),
     );
@@ -338,11 +348,11 @@ class ToppingSuggestion extends StatelessWidget {
 
 class ToppingInputChip extends StatelessWidget {
   const ToppingInputChip({
-    super.key,
+    Key? key,
     required this.topping,
     required this.onDeleted,
     required this.onSelected,
-  });
+  }) : super(key: key);
 
   final String topping;
   final ValueChanged<String> onDeleted;
@@ -355,13 +365,11 @@ class ToppingInputChip extends StatelessWidget {
       child: InputChip(
         key: ObjectKey(topping),
         label: Text(topping),
-        // avatar: CircleAvatar(
-        //   child: Text(topping[0].toUpperCase()),
-        // ),
         onDeleted: () => onDeleted(topping),
         onSelected: (bool value) => onSelected(topping),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         padding: const EdgeInsets.all(2),
+        backgroundColor: Colors.grey.shade300,
       ),
     );
   }

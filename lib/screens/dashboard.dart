@@ -1,5 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:rep_route/providers/dashboardProvider.dart';
 import 'package:rep_route/screens/root/widgets/DoctorPointerSheet.dart';
 import 'package:rep_route/screens/root/widgets/DoctorsList.dart';
 import 'package:rep_route/screens/root/widgets/FIlterSheet.dart';
@@ -16,12 +20,16 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late DashboardProvider dashboardProvider;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
+    dashboardProvider = Provider.of<DashboardProvider>(context, listen: false);
+    dashboardProvider.fetchData();
+    
   }
 
   void _handleTabSelection() {
@@ -200,6 +208,7 @@ class _DashboardState extends State<Dashboard>
               child: Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 child: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
                   controller: _tabController,
                   children: [
                     MapView(),
